@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:internship/HomePage.dart';
+import 'package:internship/ProcessPage.dart';
+import 'package:internship/NotificationPage.dart';
+import 'package:internship/ProfilePage.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -10,69 +13,54 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int currentPage = 0;
+  int _selectedIndex = 0; //New
+
+  static const List<Widget> _pages = <Widget>[
+    HomePage(),
+    ProcessPage(),
+    NotificationPage(),
+    ProfilePage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HomePage(),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPage = 0;
-                });
-              },
-              icon: Icon(
-                Icons.home,
-                color:
-                    currentPage == 0 ? Colors.deepOrangeAccent : Colors.black,
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPage = 1;
-                });
-              },
-              icon: Icon(
-                Icons.search,
-                color:
-                    currentPage == 1 ? Colors.deepOrangeAccent : Colors.black,
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPage = 2;
-                });
-              },
-              icon: Icon(
-                Icons.notifications,
-                color:
-                    currentPage == 2 ? Colors.deepOrangeAccent : Colors.black,
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  currentPage = 3;
-                });
-              },
-              icon: Icon(
-                Icons.person,
-                color:
-                    currentPage == 3 ? Colors.deepOrangeAccent : Colors.black,
-              ),
-            ),
-            Spacer(),
-          ],
-        ),
+      body:_pages.elementAt(_selectedIndex),
+      bottomNavigationBar:BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.content_paste_search),
+            label: 'Search Job',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Process',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex, //New
+        onTap: _onItemTapped,
+        backgroundColor: Colors.white,
+        selectedFontSize: 15,
+        selectedItemColor: Colors.deepOrangeAccent,
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        elevation: 3,
       ),
     );
   }
