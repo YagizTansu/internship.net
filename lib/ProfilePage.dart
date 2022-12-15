@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:internship/Settings.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -10,6 +12,22 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "INTERNSHIP.NET",
+          style: TextStyle(fontSize: 22, color: Colors.white,fontWeight: FontWeight.w900),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SettingsPage()));
+            },
+          )
+        ],
+      ),
+      body: Center(child: Text("profile")),
+    );
   }
 }

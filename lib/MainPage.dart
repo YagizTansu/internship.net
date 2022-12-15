@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship/HomePage.dart';
+import 'package:internship/SearchPage.dart';
 import 'package:internship/ProcessPage.dart';
 import 'package:internship/NotificationPage.dart';
 import 'package:internship/ProfilePage.dart';
@@ -12,11 +12,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int currentPage = 0;
-  int _selectedIndex = 0; //New
+  int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[
-    HomePage(),
+    SearchPage(),
     ProcessPage(),
     NotificationPage(),
     ProfilePage(),
@@ -31,6 +30,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
       body:_pages.elementAt(_selectedIndex),
       bottomNavigationBar:BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
