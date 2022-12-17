@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:internship/Settings.dart';
 
@@ -31,68 +31,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Intern> jobs = <Intern>[
-    Intern(
-        jobTitle: 'Senior Developer',
-        companyName: "Vestel",
-        location: "Izmir Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Junior Developer',
-        companyName: "A&R",
-        location: "Ankara Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Researcher Engineer',
-        companyName: "Siemens",
-        location: "Bursa Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Frontend developer',
-        companyName: "Turkcell",
-        location: "Istanbul Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Software Designer',
-        companyName: "Maxion",
-        location: "Izmir Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Machine Learning',
-        companyName: "Vestel",
-        location: "Istanbul Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Senior Developer',
-        companyName: "Vestel",
-        location: "Izmir Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Junior Developer',
-        companyName: "A&R",
-        location: "Ankara Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Researcher Engineer',
-        companyName: "Siemens",
-        location: "Bursa Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Frontend developer',
-        companyName: "Turkcell",
-        location: "Istanbul Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Software Designer',
-        companyName: "Maxion",
-        location: "Izmir Turkey",
-        publishDay: "1 week"),
-    Intern(
-        jobTitle: 'Machine Learning',
-        companyName: "Vestel",
-        location: "Istanbul Turkey",
-        publishDay: "1 week"),
-  ];
+  final CollectionReference _products =
+      FirebaseFirestore.instance.collection('interns');
 
   @override
   Widget build(BuildContext context) {
@@ -114,20 +54,40 @@ class _SearchPageState extends State<SearchPage> {
             )
           ],
         ),
-        body: Center(
-          child: ListView(
-            children: jobs.map((e) => InternCard(intern: e)).toList(),
-          ),
+        body: StreamBuilder(
+          stream: _products.snapshots(), //build connection
+          builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+            if (streamSnapshot.hasData) {
+              return ListView.builder(
+                itemCount: streamSnapshot.data!.docs.length, //number of rows
+                itemBuilder: (context, index) {
+                  final DocumentSnapshot documentSnapshot =
+                      streamSnapshot.data!.docs[index];
+                  return InternCard(intern: documentSnapshot);
+                },
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ),
     );
   }
 }
 
+/*Center(
+          child: ListView(
+            children: jobs.map((e) => InternCard(intern: e)).toList(),
+          ),
+        ),
+*/
+
 class InternCard extends StatelessWidget {
   const InternCard({Key? key, required this.intern}) : super(key: key);
 
-  final Intern intern;
+  final DocumentSnapshot intern;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +112,7 @@ class InternCard extends StatelessWidget {
                       height: 80,
                     ),
                     title: Text(
-                      intern.companyName + " - " + intern.jobTitle,
+                      intern["companyName"] + " - " + intern["jobTitle"],
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
@@ -160,7 +120,7 @@ class InternCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(intern.location),
+                        Text(intern["location"]),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Row(
@@ -177,7 +137,7 @@ class InternCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          intern.publishDay + " ago",
+                          intern["publishDay"] + " ago",
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.w900),
                         ),
@@ -198,13 +158,16 @@ class InternCard extends StatelessWidget {
 
 class InternDetailPage extends StatefulWidget {
   const InternDetailPage({Key? key, required this.intern}) : super(key: key);
-  final Intern intern;
+  final DocumentSnapshot intern;
 
   @override
   State<InternDetailPage> createState() => _InternDetailPageState();
 }
 
 class _InternDetailPageState extends State<InternDetailPage> {
+  final CollectionReference saved =
+      FirebaseFirestore.instance.collection('saved');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,44 +198,65 @@ class _InternDetailPageState extends State<InternDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               vertical: 20, horizontal: 20),
-                          child: Text(
-                            widget.intern.companyName +
-                                " - " +
-                                widget.intern.jobTitle,
-                            style: Theme.of(context).textTheme.headline6,
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.intern["companyName"] +
+                                    " - " +
+                                    widget.intern["jobTitle"],
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add_box),
+                                tooltip: 'Increase volume by 10',
+                                onPressed: () {
+                                  setState(() {
+                                    Map<String, dynamic> savedIntern = {
+                                      'jobTitle': widget.intern["jobTitle"],
+                                      'location': widget.intern["location"],
+                                      'companyName':
+                                          widget.intern["companyName"],
+                                      'publishDay': widget.intern["publishDay"]
+                                    };
+                                    saved.add(savedIntern);
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
-                            widget.intern.publishDay + " ago",
+                            widget.intern["publishDay"] + " ago",
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top:40,left: 20),
+                          padding: const EdgeInsets.only(top: 40, left: 20),
                           child: Text(
-                           "Description",
+                            "Description",
                             style: Theme.of(context).textTheme.headline5,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top:10,left: 30,right: 30),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 30, right: 30),
                           child: Text(
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Facilisi cras fermentum odio eu. Commodo quis imperdiet massa tincidunt nunc pulvinar. Adipiscing at in tellus integer feugiat scelerisque varius morbi enim. Suscipit adipiscing bibendum est ultricies. Quam vulputate dignissim suspendisse in est ante in nibh mauris. Accumsan sit amet nulla facilisi morbi tempus iaculis urna. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Eget felis eget nunc lobortis mattis. Elementum facilisis leo vel fringilla est ullamcorper eget. Auctor elit sed vulputate mi. Vel facilisis volutpat est velit egestas dui id ornare. Ipsum dolor sit amet consectetur adipiscing elit."
-                          ),
+                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Facilisi cras fermentum odio eu. Commodo quis imperdiet massa tincidunt nunc pulvinar. Adipiscing at in tellus integer feugiat scelerisque varius morbi enim. Suscipit adipiscing bibendum est ultricies. Quam vulputate dignissim suspendisse in est ante in nibh mauris. Accumsan sit amet nulla facilisi morbi tempus iaculis urna. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Eget felis eget nunc lobortis mattis. Elementum facilisis leo vel fringilla est ullamcorper eget. Auctor elit sed vulputate mi. Vel facilisis volutpat est velit egestas dui id ornare. Ipsum dolor sit amet consectetur adipiscing elit."),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top:40,left: 20),
+                          padding: const EdgeInsets.only(top: 40, left: 20),
                           child: Text(
                             "Responsiblities",
                             style: Theme.of(context).textTheme.headline5,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top:10,left: 30,right: 30),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 30, right: 30),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
