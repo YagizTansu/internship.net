@@ -168,6 +168,8 @@ class _InternDetailPageState extends State<InternDetailPage> {
   final CollectionReference saved =
       FirebaseFirestore.instance.collection('saved');
 
+  bool buttonState = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,29 +211,54 @@ class _InternDetailPageState extends State<InternDetailPage> {
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               IconButton(
-                                icon: const Icon(Icons.add_box),
-                                tooltip: 'Increase volume by 10',
+                                icon: buttonState? Icon(Icons.add_box):Icon(Icons.add_box_outlined),
                                 onPressed: () {
                                   setState(() {
-                                    Map<String, dynamic> savedIntern = {
-                                      'jobTitle': widget.intern["jobTitle"],
-                                      'location': widget.intern["location"],
-                                      'companyName':
-                                          widget.intern["companyName"],
-                                      'publishDay': widget.intern["publishDay"]
-                                    };
-                                    saved.add(savedIntern);
+                                    buttonState = !buttonState;
+                                    if(buttonState){
+                                      Map<String, dynamic> savedIntern = {
+                                        'jobTitle': widget.intern["jobTitle"],
+                                        'location': widget.intern["location"],
+                                        'companyName':
+                                        widget.intern["companyName"],
+                                        'publishDay': widget.intern["publishDay"]
+                                      };
+
+                                      saved.doc(widget.intern.id).set(savedIntern);
+                                    }else{
+                                      print(widget.intern.id);
+                                      FirebaseFirestore.instance.collection("saved").doc(widget.intern.id).delete();
+                                    }
                                   });
                                 },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ApplyPage()
+                                      ),
+                                  );
+                                },
+                                child: Text("Apply"),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(Colors.green),
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            widget.intern["publishDay"] + " ago",
-                            style: Theme.of(context).textTheme.bodySmall,
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.intern["publishDay"] + " ago",
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              SizedBox(
+                                width: 200,
+                              ),
+                            ],
                           ),
                         ),
                         Padding(
@@ -279,3 +306,20 @@ class _InternDetailPageState extends State<InternDetailPage> {
     );
   }
 }
+
+class ApplyPage extends StatefulWidget {
+  const ApplyPage({Key? key}) : super(key: key);
+
+  @override
+  State<ApplyPage> createState() => _ApplyPageState();
+}
+
+class _ApplyPageState extends State<ApplyPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+    );
+  }
+}
+
