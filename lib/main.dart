@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship/MainPage.dart';
+import 'package:internship/Login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainPage(),
+      home: Login(),
     );
   }
 }

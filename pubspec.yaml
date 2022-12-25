@@ -41,6 +41,9 @@ dependencies:
   firebase_auth: ^4.1.4
   settings_ui: ^2.0.2
   cloud_firestore: ^4.2.0
+  google_maps_flutter: ^2.2.2
+  awesome_dropdown: ^0.0.4
+
 
 dev_dependencies:
   flutter_test:

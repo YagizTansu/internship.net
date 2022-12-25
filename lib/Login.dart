@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:internship/MainPage.dart';
+import 'package:internship/Register.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -80,7 +82,10 @@ class _LoginState extends State<Login> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => MainPage()
+                            ),
+                            );
                           },
                           child: Text('Login',style: TextStyle(
                             fontSize: 20
@@ -98,8 +103,12 @@ class _LoginState extends State<Login> {
                           margin: EdgeInsets.all(10),
                           child: ElevatedButton(
                             onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => RegisterPage()
+                              ),
+                              );
                             },
-                            child: Text('Subscribe',style: TextStyle(
+                            child: Text('Register',style: TextStyle(
                                 fontSize: 20
                             ),
                             ),
