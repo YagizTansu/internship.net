@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/MainPage.dart';
 import 'package:internship/Register.dart';
 
 class Login extends StatefulWidget {
@@ -10,6 +11,16 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -54,6 +65,7 @@ class _LoginState extends State<Login> {
                       margin: EdgeInsets.only(top:60,left: 30,right: 30,bottom: 10),
                       padding: EdgeInsets.only(left: 15,right: 15,top: 5,bottom: 5),
                       child: TextFormField(
+                        controller: emailController,
                         decoration: InputDecoration(
                             border: InputBorder.none,
                           prefixIcon: Icon(Icons.mail),
@@ -69,6 +81,7 @@ class _LoginState extends State<Login> {
                       margin: EdgeInsets.all(30),
                       padding: EdgeInsets.only(left: 15,right: 15,top: 5,bottom: 5),
                       child: TextFormField(
+                        controller: passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                             border: InputBorder.none,
@@ -82,10 +95,7 @@ class _LoginState extends State<Login> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MainPage()
-                            ),
-                            );
+                            signIn();
                           },
                           child: Text('Login',style: TextStyle(
                             fontSize: 20
@@ -122,7 +132,6 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
-
                       ],
                     )
                   ],
@@ -131,6 +140,13 @@ class _LoginState extends State<Login> {
             ),
           ),
         )
+    );
+  }
+
+  Future signIn() async{
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
     );
   }
 }

@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internship/SearchPage.dart';
 import 'package:internship/ProcessPage.dart';
 import 'package:internship/NotificationPage.dart';
 import 'package:internship/ProfilePage.dart';
+
+import 'models/Intern.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -13,7 +16,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-
   static const List<Widget> _pages = <Widget>[
     SearchPage(),
     ProcessPage(),

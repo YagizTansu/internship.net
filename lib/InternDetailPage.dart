@@ -1,35 +1,33 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:internship/models/Intern.dart';
 import 'ApplyPage.dart';
-
-
 
 class InternDetailPage extends StatefulWidget {
   const InternDetailPage({Key? key, required this.intern}) : super(key: key);
-  final DocumentSnapshot intern;
+  final Intern intern;
+
 
   @override
   State<InternDetailPage> createState() => _InternDetailPageState();
 }
 
 class _InternDetailPageState extends State<InternDetailPage> {
-  final CollectionReference saved =
-  FirebaseFirestore.instance.collection('saved');
-
-  final CollectionReference applied =
-  FirebaseFirestore.instance.collection('Applied');
-
-  bool buttonState = false;
-
+  bool buttonState = false ;
   final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(38.4237, 27.1428),
     zoom: 14.4746,
   );
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkIfLikedOrNot(widget.intern.uid);
+  }
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -73,65 +71,30 @@ class _InternDetailPageState extends State<InternDetailPage> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  widget.intern["companyName"] +
-                                      " - " +
-                                      widget.intern["jobTitle"],
+                                  widget.intern.companyName + " - " + widget.intern.jobTitle,
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
                               IconButton(
-                                icon: buttonState
-                                    ? Icon(Icons.add_box)
-                                    : Icon(Icons.add_box_outlined),
+                                icon: buttonState ? Icon(Icons.add_box) : Icon(Icons.add_box_outlined),
                                 onPressed: () {
                                   setState(() {
-                                    buttonState = !buttonState;
-                                    if (buttonState) {
-                                      Map<String, dynamic> savedIntern = {
-                                        'jobTitle': widget.intern["jobTitle"],
-                                        'location': widget.intern["location"],
-                                        'companyName':
-                                        widget.intern["companyName"],
-                                        'publishDay':
-                                        widget.intern["publishDay"],
-                                        'description':
-                                        widget.intern["description"],
-                                        'responsibilties':
-                                        widget.intern["responsibilties"],
-                                      };
-
-                                      saved
-                                          .doc(widget.intern.id)
-                                          .set(savedIntern);
-                                    } else {
-                                      print(widget.intern.id);
-                                      FirebaseFirestore.instance
-                                          .collection("saved")
-                                          .doc(widget.intern.id)
-                                          .delete();
+                                    String uid = FirebaseAuth.instance.currentUser!.uid;
+                                    if(!buttonState){
+                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInterns').doc(widget.intern.uid).set(widget.intern.toMap());
+                                    }else{
+                                      showAlertDialog(context);
+                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInterns').doc(widget.intern.uid).delete();
                                     }
+                                    buttonState=!buttonState;
                                   });
                                 },
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  Map<String, dynamic> appliedIntern = {
-                                    'jobTitle': widget.intern["jobTitle"],
-                                    'location': widget.intern["location"],
-                                    'companyName': widget.intern["companyName"],
-                                    'publishDay': widget.intern["publishDay"],
-                                    'description': widget.intern["description"],
-                                    'responsibilties':
-                                    widget.intern["responsibilties"],
-                                  };
-
-                                  applied
-                                      .doc(widget.intern.id)
-                                      .set(appliedIntern);
-
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (context) => ApplyPage()),
+                                        builder: (context) => ApplyPage(intern: widget.intern,)),
                                   );
                                 },
                                 child: Text("Apply"),
@@ -148,7 +111,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                           child: Row(
                             children: [
                               Text(
-                                widget.intern["publishDay"] + " ago",
+                                widget.intern.publishDay + " ago",
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               SizedBox(
@@ -167,7 +130,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                         Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, left: 30, right: 30),
-                            child: Text(widget.intern["description"])),
+                            child: Text(widget.intern.description)),
                         Padding(
                           padding: const EdgeInsets.only(top: 40, left: 20),
                           child: Text(
@@ -181,7 +144,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.intern["responsibilties"]),
+                              Text(widget.intern.responsibilties),
                             ],
                           ),
                         ),
@@ -218,4 +181,53 @@ class _InternDetailPageState extends State<InternDetailPage> {
       ),
     );
   }
+  checkIfLikedOrNot(String id) async{
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInterns').doc(id).get();
+
+    this.setState(() {
+      if (!ds.exists) {
+        buttonState = false;
+      } else {
+        buttonState = true;
+      }
+    });
+  }
 }
+
+showAlertDialog(BuildContext context) {
+  // Create button
+  Widget okButton = ElevatedButton(
+    child: Text("delete from saved"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  Widget cancelButton = ElevatedButton(
+    child: Text("cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // Create AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Delete"),
+    content: Text("This intern will remove from saved interns"),
+    actions: [
+      okButton,
+      cancelButton
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+

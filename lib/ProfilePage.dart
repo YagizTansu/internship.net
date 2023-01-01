@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internship/Settings.dart';
 
@@ -10,6 +11,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final user = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +29,15 @@ class _ProfilePageState extends State<ProfilePage> {
           )
         ],
       ),
-      body: Center(child: Text("profile")),
+      body: Center(child: Column(
+        children: [
+          Text("profile"),
+          Text(user.email!),
+          ElevatedButton(onPressed: (){
+            FirebaseAuth.instance.signOut();
+          }, child: Text("Log out"),)
+        ],
+      )),
     );
   }
 }

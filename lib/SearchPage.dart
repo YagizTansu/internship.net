@@ -3,29 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:internship/FilterPage.dart';
 import 'package:internship/Settings.dart';
-
 import 'InternCard.dart';
-import 'InternDetailPage.dart';
-
-class Intern {
-  Intern(
-      {required this.companyName,
-      required this.jobTitle,
-      required this.location,
-      required this.publishDay});
-
-  final String companyName;
-  final String jobTitle;
-  final String location;
-  final String publishDay;
-
-  Intern.fromJson(Map<String, dynamic> m)
-      : this(
-            companyName: m['companyName'],
-            jobTitle: m['author'],
-            location: m['numPages'],
-            publishDay: m['numPages']);
-}
+import 'models/Intern.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -35,19 +14,16 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final CollectionReference _products =
-      FirebaseFirestore.instance.collection('interns');
   TextEditingController controller = new TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "INTERNSHIP.NET",
+              "INTERNSHIP.NET",
             style: TextStyle(
-                fontSize: 22, color: Colors.white, fontWeight: FontWeight.w900),
+                fontSize: 21, color: Colors.white, fontWeight: FontWeight.w800),
           ),
           actions: [
             IconButton(
@@ -94,17 +70,18 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               height: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder(
-                stream: _products.snapshots(), //build connection
-                builder:
-                    (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                stream: FirebaseFirestore.instance.collection('interns').snapshots(), //build connection
+                builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                   if (streamSnapshot.hasData) {
                     return ListView.builder(
                       itemCount: streamSnapshot.data!.docs.length,
                       //number of rows
                       itemBuilder: (context, index) {
-                        final DocumentSnapshot documentSnapshot =
-                            streamSnapshot.data!.docs[index];
-                        return InternCard(intern: documentSnapshot);
+                        final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
+                        Map<String, dynamic> map = documentSnapshot.data() as Map<String, dynamic>;
+                        Intern intern = Intern.fromMap(map);
+                        intern.setId(documentSnapshot.id);
+                        return InternCard(intern: intern);
                       },
                     );
                   }

@@ -13,7 +13,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body:     SettingsList(
+      body:SettingsList(
         sections: [
           SettingsSection(
             title: Text('Common'),

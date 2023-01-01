@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:internship/models/Intern.dart';
 import 'InternDetailPage.dart';
-
 
 class InternCard extends StatelessWidget {
   const InternCard({Key? key, required this.intern}) : super(key: key);
-
-  final DocumentSnapshot intern;
+  final Intern intern;
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +29,14 @@ class InternCard extends StatelessWidget {
                       height: 80,
                     ),
                     title: Text(
-                      intern["companyName"] + " - " + intern["jobTitle"],
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      intern.companyName+ " - " + intern.jobTitle,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(intern["location"]),
+                        Text(intern.location),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Row(
@@ -56,7 +53,7 @@ class InternCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          intern["publishDay"] + " ago",
+                          intern.publishDay + " ago",
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.w900),
                         ),
