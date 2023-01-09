@@ -29,14 +29,14 @@ class InternCard extends StatelessWidget {
                       height: 80,
                     ),
                     title: Text(
-                      intern.companyName+ " - " + intern.jobTitle,
+                      intern.companyName.toUpperCase()+ " - " + intern.jobTitle,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(intern.location),
+                        Text(intern.city+", "+intern.country ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Row(
@@ -48,7 +48,7 @@ class InternCard extends StatelessWidget {
                               SizedBox(
                                 width: 12,
                               ),
-                              Text('Actively recruiting'),
+                              Expanded(child: Text('Actively recruiting')),
                             ],
                           ),
                         ),

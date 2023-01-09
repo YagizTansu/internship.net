@@ -3,7 +3,7 @@ import 'package:internship/Settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'InternCard.dart';
-import 'models/Intern.dart';
+import '../models/Intern.dart';
 
 class ProcessPage extends StatefulWidget {
   const ProcessPage({Key? key}) : super(key: key);

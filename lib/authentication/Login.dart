@@ -1,23 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/Register.dart';
+import 'package:internship/authentication/Register.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<Login> createState() => _LoginState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final userNameController = TextEditingController();
+class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   void dispose() {
-    userNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -27,7 +25,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(),
           body: Center(
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -37,40 +34,42 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               child: SingleChildScrollView(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
+                      height: 220,
+                      width: 220,
+                      margin: EdgeInsets.only(top: 100),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20),bottom: Radius.circular(20))
+                        borderRadius: BorderRadius.circular(150),
+                        border: Border.all(
+                          color: Colors.white60,
+                          width: 2
+                        ),
                       ),
-                      margin: EdgeInsets.only(top:60,left: 30,right: 30,bottom: 10),
-                      padding: EdgeInsets.only(left: 15,right: 15,top: 5,bottom: 5),
-                      child: TextFormField(
-                        controller: userNameController,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Icon(Icons.mail),
-                            hintText: "Enter your username"
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(150),
+                          image: DecorationImage(
+                            image: AssetImage("images/logo.png"),
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20),bottom: Radius.circular(20))
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20),bottom: Radius.circular(20))
                       ),
-                      margin: EdgeInsets.only(top:30,left: 30,right: 30,bottom: 10),
+                      margin: EdgeInsets.only(top:60,left: 30,right: 30,bottom: 10),
                       padding: EdgeInsets.only(left: 15,right: 15,top: 5,bottom: 5),
                       child: TextFormField(
                         controller: emailController,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (email)=>
-                        email == null? "Wrong email": null,
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            prefixIcon: Icon(Icons.mail),
-                            hintText: "Enter your email"
+                          prefixIcon: Icon(Icons.mail),
+                          hintText: "Enter your email"
                         ),
                       ),
                     ),
@@ -83,9 +82,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: EdgeInsets.only(left: 15,right: 15,top: 5,bottom: 5),
                       child: TextFormField(
                         controller: passwordController,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (password)=>
-                        password != null && password.length > 6 ?  null:"password will be more than 6 charachter",
                         obscureText: true,
                         decoration: InputDecoration(
                             border: InputBorder.none,
@@ -95,22 +91,44 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center, //Center Row contents horizontally,
+                        mainAxisAlignment: MainAxisAlignment.center, //Center Row contents horizontally,
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            signUp();
+                            signIn();
                           },
-                          child: Text('Register',style: TextStyle(
-                              fontSize: 20
+                          child: Text('Login',style: TextStyle(
+                            fontSize: 20
                           ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
                             padding: EdgeInsets.symmetric(vertical: 15,horizontal: 40),
                             elevation: 8,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12), // <-- Radius
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => RegisterPage()
+                              ),
+                              );
+                            },
+                            child: Text('Register',style: TextStyle(
+                                fontSize: 20
+                            ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple,
+                              padding: EdgeInsets.symmetric(vertical: 15,horizontal: 40),
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12), // <-- Radius
+                              ),
                             ),
                           ),
                         ),
@@ -124,16 +142,11 @@ class _RegisterPageState extends State<RegisterPage> {
         )
     );
   }
-  Future signUp() async{
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+
+  Future signIn() async{
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
-    ).then((value) => FirebaseFirestore.instance.collection("users").doc(value.user?.uid)
-        .set({
-      "email": value.user?.email,
-      "userName": value.user?.email,},
-    ),);
-    Navigator.of(context).pop();
+    );
   }
 }
-

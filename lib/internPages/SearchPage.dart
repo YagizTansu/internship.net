@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/FilterPage.dart';
+import 'package:internship/internPages/FilterPage.dart';
 import 'package:internship/Settings.dart';
 import 'InternCard.dart';
-import 'models/Intern.dart';
+import '../models/Intern.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -15,6 +15,13 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   TextEditingController controller = new TextEditingController();
+  var stream;
+  List<String> filter = ['all'];
+  @override
+  void initState() {
+    super.initState();
+    stream = FirebaseFirestore.instance.collection('interns').snapshots();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,8 +36,7 @@ class _SearchPageState extends State<SearchPage> {
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => SettingsPage()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => SettingsPage()));
               },
             ),
           ],
@@ -41,12 +47,24 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             Container(
               child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async{
+                    final filterList = await Navigator.of(context).push<List<String>>(
                     MaterialPageRoute(
                       builder: (context) => FilterPage()
                     ),
                   );
+                    setState(() {
+                      print(filterList![0]);
+                      filter = filterList!;
+                      if(filterList![0] != "All" && filterList![1] != "All"){
+                        stream = FirebaseFirestore.instance.collection('interns')
+                            .where('jobTitle',isEqualTo: filterList![0])
+                        //.where('country',isEqualTo: filter[1])
+                            .where('city',isEqualTo: filterList![1])
+                            .snapshots();
+                      }
+                    });
+                    
                 },
                 child: Card(
                   child: new ListTile(
@@ -54,7 +72,7 @@ class _SearchPageState extends State<SearchPage> {
                     title: new TextField(
                       controller: controller,
                       decoration: new InputDecoration(
-                          hintText: 'Search Intern', border: InputBorder.none),
+                          hintText: 'Search Internship...', border: InputBorder.none),
                       onChanged: (val) {},
                     ),
                     trailing: new IconButton(
@@ -70,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               height: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection('interns').snapshots(), //build connection
+                stream: stream,
                 builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                   if (streamSnapshot.hasData) {
                     return ListView.builder(

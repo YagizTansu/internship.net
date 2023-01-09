@@ -43,6 +43,8 @@ dependencies:
   cloud_firestore: ^4.2.0
   google_maps_flutter: ^2.2.2
   awesome_dropdown: ^0.0.4
+  file_picker: ^5.2.4
+  firebase_storage: ^11.0.10
 
 
 dev_dependencies:

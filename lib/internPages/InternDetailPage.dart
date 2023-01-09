@@ -26,7 +26,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkIfLikedOrNot(widget.intern.uid);
+    controlChecked(widget.intern.uid);
   }
 
   static const CameraPosition _kLake = CameraPosition(
@@ -181,7 +181,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
       ),
     );
   }
-  checkIfLikedOrNot(String id) async{
+  controlChecked(String id) async{
     String uid = FirebaseAuth.instance.currentUser!.uid;
     var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInterns').doc(id).get();
 

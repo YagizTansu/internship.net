@@ -1,26 +1,24 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/internPages/SearchPage.dart';
-import 'package:internship/internPages/ProcessPage.dart';
-import 'package:internship/NotificationPage.dart';
 import 'package:internship/ProfilePage.dart';
+import 'package:internship/companyPages/Published.dart';
 
-import 'models/Intern.dart';
+import '../internPages/ProcessPage.dart';
+import 'PublishInternPage.dart';
+import '../internPages/SearchPage.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+class CompanyPage extends StatefulWidget {
+  const CompanyPage({Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<CompanyPage> createState() => _CompanyPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _CompanyPageState extends State<CompanyPage> {
   int _selectedIndex = 0;
   static const List<Widget> _pages = <Widget>[
-    SearchPage(),
-    ProcessPage(),
-    NotificationPage(),
-    ProfilePage(),
+    PublishInternPage(),
+    Published(),
+    ProfilePage()
   ];
 
   void _onItemTapped(int index) {
@@ -28,7 +26,6 @@ class _MainPageState extends State<MainPage> {
       _selectedIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,16 +35,12 @@ class _MainPageState extends State<MainPage> {
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.content_paste_search),
-            label: 'Search Intern',
+            icon: Icon(Icons.publish_outlined),
+            label: 'Publish Intern',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
-            label: 'Process',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
+            label: 'Published',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
