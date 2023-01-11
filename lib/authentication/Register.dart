@@ -2,7 +2,6 @@ import 'package:awesome_dropdown/awesome_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/authentication/Register.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -163,9 +162,10 @@ class _RegisterPageState extends State<RegisterPage> {
         password: passwordController.text.trim(),
     ).then((value) => FirebaseFirestore.instance.collection("users").doc(value.user?.uid)
         .set({
-      "email": value.user?.email,
-      "userName": value.user?.email,
+      "userEmail": value.user?.email,
+      "userName": userNameController.text,
       "userType": userType,
+      "userDescription":""
     },
     ),);
     Navigator.of(context).pop();

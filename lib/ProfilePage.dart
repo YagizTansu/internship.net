@@ -41,120 +41,148 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "INTERNSHIP.NET",
-          style: TextStyle(fontSize: 22, color: Colors.white,fontWeight: FontWeight.w900),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "INTERNSHIP.NET",
+            style: TextStyle(fontSize: 22, color: Colors.white,fontWeight: FontWeight.w900),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SettingsPage()));
+              },
+            )
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SettingsPage()));
-            },
-          )
-        ],
-      ),
-      body: Center(
-          child: Column(
-        children: [
-
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage("images/logo.png"),
-              minRadius: 100.0,
-            ),
-          ),
-          Text(
-            userNameController.text,
-            style: TextStyle(
-              fontSize: 35,
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "User Email",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        body: Center(
+            child: SingleChildScrollView(
+              child: Column(
+          children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CircleAvatar(
+                  backgroundImage: AssetImage("images/logo.png"),
+                  minRadius: 100.0,
                 ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: userEmailController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+              ),
+              Text(
+                userNameController.text,
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "User Email",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: userEmailController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "User Description",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: userDescriptionController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: (){
+                      var collection = FirebaseFirestore.instance.collection('users');
+                      collection
+                          .doc(FirebaseAuth.instance.currentUser!.uid) // <-- Doc ID where data should be updated.
+                          .update({
+                        'userEmail': userEmailController.text,
+                        'userDescription': userDescriptionController.text
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          behavior: SnackBarBehavior.floating,
+                          content: Container(
+                            padding: EdgeInsets.all(16),
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade600,
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            child: Center(child: Text("Your profile is updated...",style: TextStyle(fontSize: 14),
+                            ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Text("Update profile",
+                        style: TextStyle(
+                          fontSize: 20
+                      ),),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.orange.shade600,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "User Description",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: userDescriptionController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  SizedBox(
+                    width: 24,
+                  ),
+                  ElevatedButton(
+                    onPressed: (){FirebaseAuth.instance.signOut();},
+                    child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Text("Log out"
+                    ,style: TextStyle(
+                        fontSize: 20
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: (){
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text("Update profile",
-                    style: TextStyle(
-                      fontSize: 20
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red.shade600
                   ),),
-                ),
-                style: ElevatedButton.styleFrom(
-                    primary: Colors.orange.shade600,
-                ),
+                ],
               ),
-              SizedBox(
-                width: 24,
-              ),
-              ElevatedButton(
-                onPressed: (){FirebaseAuth.instance.signOut();},
-                child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Text("Log out"
-                ,style: TextStyle(
-                    fontSize: 20
-                  ),
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red.shade600
-              ),),
-            ],
-          ),
-        ],
-      )),
+          ],
+        ),
+            )),
+      ),
     );
   }
 }

@@ -185,7 +185,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInterns').doc(id).get();
 
-    this.setState(() {
+    setState(() {
       if (!ds.exists) {
         buttonState = false;
       } else {

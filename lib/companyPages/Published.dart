@@ -15,6 +15,26 @@ class Published extends StatefulWidget {
 }
 
 class _PublishedState extends State<Published> {
+  String companyName = "";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    findName();
+  }
+
+  void findName() async{
+    await FirebaseFirestore.instance.collection('users')
+        .where('userEmail',isEqualTo:FirebaseAuth.instance.currentUser!.email).get()
+        .then((QuerySnapshot querySnapshot) => {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          companyName = doc['userName'];
+        });
+        print(companyName);
+      })
+    });
+  }
   String? email = FirebaseAuth.instance.currentUser!.email;
   @override
   Widget build(BuildContext context) {
@@ -36,7 +56,7 @@ class _PublishedState extends State<Published> {
       ),
       body: Center(
         child: StreamBuilder(
-          stream:  FirebaseFirestore.instance.collection('interns').where('companyName',isEqualTo: "vestell").snapshots(),//build connection
+          stream:  FirebaseFirestore.instance.collection('interns').where('companyName',isEqualTo: companyName).snapshots(),//build connection
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData) {
               return ListView.builder(
@@ -46,29 +66,23 @@ class _PublishedState extends State<Published> {
                   Map<String, dynamic> map = documentSnapshot.data() as Map<String, dynamic>;
                   Intern intern = Intern.fromMap(map);
                   intern.setId(documentSnapshot.id);
-                  return StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('interns').doc(intern.uid).collection('applicants').snapshots(),
-                      builder:  (context, snapshot){
-                        final DocumentSnapshot documentSnapshot = snapshot.data!.docs[0];
-                        Map<String, dynamic> map = documentSnapshot.data() as Map<String, dynamic>;
-                        var userList = map;
-                      return Row(
-                        children: [
-                          Flexible(
-                              flex: 5,
-                              child: InternCard(intern:  intern)),
-                          Flexible(
-                              flex: 2,
-                              child: ElevatedButton(onPressed: (){
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context)=> Applicants(),
-                                  ),
-                                );
-                              }, child: Text("Applicants"),)
-                          ),
-                        ],
-                      );
-                      });
+                  return Row(
+                    children: [
+                      Flexible(
+                          flex: 5,
+                          child: InternCard(intern:  intern)),
+                      Flexible(
+                          flex: 2,
+                          child: ElevatedButton(onPressed: (){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context)=> Applicants(intern: intern,),
+                              ),
+                            );
+                          }, child: Text("Applicants"),
+                          )
+                      ),
+                    ],
+                  );
                 },
               );
             }
