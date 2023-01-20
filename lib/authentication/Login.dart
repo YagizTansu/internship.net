@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internship/authentication/Register.dart';
@@ -144,9 +143,53 @@ class _LoginState extends State<Login> {
   }
 
   Future signIn() async{
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-    );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            behavior: SnackBarBehavior.floating,
+            content: Container(
+              padding: EdgeInsets.all(16),
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.red.shade600,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+              child: Center(child: Text("No user found for that email",style: TextStyle(fontSize: 14),
+              ),
+              ),
+            ),
+          ),
+        );
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            behavior: SnackBarBehavior.floating,
+            content: Container(
+              padding: EdgeInsets.all(16),
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.red.shade600,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+              child: Center(child: Text("Wrong password provided for that user.",style: TextStyle(fontSize: 14),
+              ),
+              ),
+            ),
+          ),
+        );
+        print('Wrong password provided for that user.');
+      }
+    }
   }
 }

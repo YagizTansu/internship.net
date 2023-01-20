@@ -3,30 +3,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:internship/models/Intern.dart';
+import 'package:internship/models/Internship.dart';
 import 'ApplyPage.dart';
 
-class InternDetailPage extends StatefulWidget {
-  const InternDetailPage({Key? key, required this.intern}) : super(key: key);
-  final Intern intern;
-
+class InternshipDetailPage extends StatefulWidget {
+  const InternshipDetailPage({Key? key, required this.internship}) : super(key: key);
+  final Internship internship;
 
   @override
-  State<InternDetailPage> createState() => _InternDetailPageState();
+  State<InternshipDetailPage> createState() => _InternshipDetailPageState();
 }
 
-class _InternDetailPageState extends State<InternDetailPage> {
+class _InternshipDetailPageState extends State<InternshipDetailPage> {
   bool buttonState = false ;
+  late Duration duration = new Duration();
+
   final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(38.4237, 27.1428),
     zoom: 14.4746,
   );
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    controlChecked(widget.intern.uid);
+    DateTime dt1 = DateTime.parse(widget.internship.publishDay);
+    DateTime dt2 = DateTime.now();
+    duration = dt2.difference(dt1);
+    controlChecked(widget.internship.uid);
   }
 
   static const CameraPosition _kLake = CameraPosition(
@@ -71,7 +76,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  widget.intern.companyName + " - " + widget.intern.jobTitle,
+                                  widget.internship.companyName + " - " + widget.internship.internshipTitle,
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
@@ -81,10 +86,45 @@ class _InternDetailPageState extends State<InternDetailPage> {
                                   setState(() {
                                     String uid = FirebaseAuth.instance.currentUser!.uid;
                                     if(!buttonState){
-                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInterns').doc(widget.intern.uid).set(widget.intern.toMap());
+                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInternships').doc(widget.internship.uid).set(widget.internship.toMap());
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Container(
+                                            padding: EdgeInsets.all(16),
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.shade600,
+                                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                                            ),
+                                            child: Center(child: Text("Internship added to the Saved",style: TextStyle(fontSize: 14),
+                                            ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
                                     }else{
-                                      showAlertDialog(context);
-                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInterns').doc(widget.intern.uid).delete();
+                                      FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInternships').doc(widget.internship.uid).delete();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          elevation: 0,
+                                          backgroundColor: Colors.transparent,
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Container(
+                                            padding: EdgeInsets.all(16),
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.shade600,
+                                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                                            ),
+                                            child: Center(child: Text("Internship removed to the Saved",style: TextStyle(fontSize: 14),
+                                            ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
                                     }
                                     buttonState=!buttonState;
                                   });
@@ -94,7 +134,8 @@ class _InternDetailPageState extends State<InternDetailPage> {
                                 onPressed: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (context) => ApplyPage(intern: widget.intern,)),
+                                        builder: (context) => ApplyPage(internship: widget.internship),
+                                    ),
                                   );
                                 },
                                 child: Text("Apply"),
@@ -111,7 +152,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                           child: Row(
                             children: [
                               Text(
-                                widget.intern.publishDay + " ago",
+                                duration.inDays.toString() + " days ago",
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               SizedBox(
@@ -130,11 +171,11 @@ class _InternDetailPageState extends State<InternDetailPage> {
                         Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, left: 30, right: 30),
-                            child: Text(widget.intern.description)),
+                            child: Text(widget.internship.description)),
                         Padding(
                           padding: const EdgeInsets.only(top: 40, left: 20),
                           child: Text(
-                            "Responsiblities",
+                            "Responsibilities",
                             style: Theme.of(context).textTheme.headline5,
                           ),
                         ),
@@ -144,7 +185,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.intern.responsibilties),
+                              Text(widget.internship.responsibilities),
                             ],
                           ),
                         ),
@@ -183,7 +224,7 @@ class _InternDetailPageState extends State<InternDetailPage> {
   }
   controlChecked(String id) async{
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInterns').doc(id).get();
+    var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInternships').doc(id).get();
 
     setState(() {
       if (!ds.exists) {
@@ -193,41 +234,6 @@ class _InternDetailPageState extends State<InternDetailPage> {
       }
     });
   }
-}
-
-showAlertDialog(BuildContext context) {
-  // Create button
-  Widget okButton = ElevatedButton(
-    child: Text("delete from saved"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-
-  Widget cancelButton = ElevatedButton(
-    child: Text("cancel"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-
-  // Create AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Delete"),
-    content: Text("This intern will remove from saved interns"),
-    actions: [
-      okButton,
-      cancelButton
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
 }
 
 

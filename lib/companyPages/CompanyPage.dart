@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:internship/ProfilePage.dart';
 import 'package:internship/companyPages/Published.dart';
-
-import '../internPages/ProcessPage.dart';
-import 'PublishInternPage.dart';
-import '../internPages/SearchPage.dart';
+import 'PublishInternshipPage.dart';
 
 class CompanyPage extends StatefulWidget {
   const CompanyPage({Key? key}) : super(key: key);
@@ -16,8 +13,8 @@ class CompanyPage extends StatefulWidget {
 class _CompanyPageState extends State<CompanyPage> {
   int _selectedIndex = 0;
   static const List<Widget> _pages = <Widget>[
-    PublishInternPage(),
     Published(),
+    PublishInternshipPage(),
     ProfilePage()
   ];
 
@@ -36,11 +33,11 @@ class _CompanyPageState extends State<CompanyPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.publish_outlined),
-            label: 'Publish Intern',
+            label: 'Published',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
-            label: 'Published',
+            label: 'Publish Internship',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

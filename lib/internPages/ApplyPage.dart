@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/internPages/InternCard.dart';
+import 'package:internship/internPages/InternshipCard.dart';
 import 'package:file_picker/file_picker.dart';
-import '../models/Intern.dart';
+import '../models/Internship.dart';
 import '../models/User.dart';
 
 class ApplyPage extends StatefulWidget {
-  const ApplyPage({Key? key,required this.intern}) : super(key: key);
-  final Intern intern;
+  const ApplyPage({Key? key,required this.internship}) : super(key: key);
+  final Internship internship;
   @override
   State<ApplyPage> createState() => _ApplyPageState();
 }
@@ -30,7 +30,7 @@ class _ApplyPageState extends State<ApplyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              InternCard(intern: widget.intern),
+              InternshipCard(internship: widget.internship),
               SizedBox(
                 height: 20,
               ),
@@ -91,13 +91,13 @@ class _ApplyPageState extends State<ApplyPage> {
                     await FirebaseStorage.instance.ref('$uid/coverLetter/$coverLetterFileName').putData(coverLetterFileBytes!);
                     await FirebaseStorage.instance.ref('$uid/cv/$cvFileName').putData(cvFileBytes!);
 
-                    //intern add to user appliedIntern collection
-                    FirebaseFirestore.instance.collection('users').doc(uid).collection('appliedInterns').doc(widget.intern.uid).set(widget.intern.toMap());
+                    //internship add to user appliedIntern collection
+                    FirebaseFirestore.instance.collection('users').doc(uid).collection('appliedInternships').doc(widget.internship.uid).set(widget.internship.toMap());
 
-                    //user add to intern applicant collection
+                    //user add to internships applicant collection
                     var user = await FirebaseFirestore.instance.collection('users').doc(uid).get();
                     UserModel userModel = UserModel(user.data()!['userName'],user.data()!['userEmail']);
-                    FirebaseFirestore.instance.collection('interns').doc(widget.intern.uid).collection('applicants').doc(uid).set(userModel.toMap());
+                    FirebaseFirestore.instance.collection('internships').doc(widget.internship.uid).collection('applicants').doc(uid).set(userModel.toMap());
 
                     Navigator.of(context).pop();
 
@@ -138,7 +138,7 @@ class _ApplyPageState extends State<ApplyPage> {
                     );
                   }
                 },
-                child: Text("Apply to Intern"),
+                child: Text("Apply to Internship"),
               ),
             ],
           ),

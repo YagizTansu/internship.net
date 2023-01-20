@@ -10,7 +10,6 @@ import 'package:internship/internPages/SearchPage.dart';
 import 'package:internship/internPages/ProcessPage.dart';
 import 'package:internship/internPages/NotificationPage.dart';
 import 'package:internship/ProfilePage.dart';
-import 'models/Intern.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -47,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         print('Notification Title: ${message.notification!.title}');
         print('Notification Body: ${message.notification!.body}');
         const snackBar = SnackBar(
-          content: Text('Your intern application is approved! Check your notification'),
+          content: Text('Your internship application is approved! Check your notification'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
@@ -119,38 +118,40 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-      body:_pages.elementAt(_selectedIndex),
-      bottomNavigationBar:BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.content_paste_search),
-            label: 'Search Intern',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Process',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex, //New
-        onTap: _onItemTapped,
-        backgroundColor: Colors.white,
-        selectedFontSize: 15,
-        selectedItemColor: Colors.deepOrangeAccent,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        elevation: 3,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+        body:_pages.elementAt(_selectedIndex),
+        bottomNavigationBar:BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.content_paste_search),
+              label: 'Search Intern',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Process',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: 'Notifications',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex, //New
+          onTap: _onItemTapped,
+          backgroundColor: Colors.white,
+          selectedFontSize: 15,
+          selectedItemColor: Colors.deepOrangeAccent,
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          elevation: 3,
+        ),
       ),
     );
   }

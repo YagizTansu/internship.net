@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:internship/Settings.dart';
 import 'package:internship/companyPages/ApplicantDetailPage.dart';
 import 'package:internship/models/User.dart';
-import '../models/Intern.dart';
+import '../models/Internship.dart';
 
 class Applicants extends StatefulWidget {
-  const Applicants({Key? key,required this.intern}) : super(key: key);
-  final Intern intern;
+  const Applicants({Key? key,required this.internship}) : super(key: key);
+  final Internship internship;
 
   @override
   State<Applicants> createState() => _ApplicantsState();
@@ -22,7 +22,7 @@ class _ApplicantsState extends State<Applicants> {
         appBar: AppBar(),
         body: Center(
           child: StreamBuilder(
-            stream:  FirebaseFirestore.instance.collection('interns').doc(widget.intern.uid).collection('applicants').snapshots(),//build connection
+            stream:  FirebaseFirestore.instance.collection('internships').doc(widget.internship.uid).collection('applicants').snapshots(),//build connection
             builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
               if (streamSnapshot.hasData) {
                 return ListView.builder(
@@ -34,7 +34,7 @@ class _ApplicantsState extends State<Applicants> {
                       onTap: ()async{
                         UserModel userModel = UserModel.fromMap(map);
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ApplicantDetailPage(user: userModel,))
+                            builder: (context) => ApplicantDetailPage(user: userModel,internship: widget.internship,))
                         );
                       },
                       child: ListTile(

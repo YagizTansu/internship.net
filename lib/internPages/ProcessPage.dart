@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:internship/Settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'InternCard.dart';
-import '../models/Intern.dart';
+import 'InternshipCard.dart';
+import '../models/Internship.dart';
 
 class ProcessPage extends StatefulWidget {
   const ProcessPage({Key? key}) : super(key: key);
@@ -24,9 +24,9 @@ class _ProcessPageState extends State<ProcessPage> {
             title: Text(
               "INTERNSHIP.NET",
               style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 21,
                   color: Colors.white,
-                  fontWeight: FontWeight.w900),
+                  fontWeight: FontWeight.w800),
             ),
             bottom: TabBar(
               tabs: [
@@ -52,7 +52,7 @@ class _ProcessPageState extends State<ProcessPage> {
             children: [
               Center(
                 child: StreamBuilder(
-                  stream:  FirebaseFirestore.instance.collection('users').doc(uid).collection('appliedInterns').snapshots(), //build connection
+                  stream:  FirebaseFirestore.instance.collection('users').doc(uid).collection('appliedInternships').snapshots(), //build connection
                   builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                     if (streamSnapshot.hasData) {
                       return ListView.builder(
@@ -60,9 +60,9 @@ class _ProcessPageState extends State<ProcessPage> {
                         itemBuilder: (context, index) {
                           final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                           Map<String, dynamic> map = documentSnapshot.data() as Map<String, dynamic>;
-                          Intern intern = Intern.fromMap(map);
-                          intern.setId(documentSnapshot.id);
-                          return InternCard(intern:  intern);
+                          Internship internship = Internship.fromMap(map);
+                          internship.setId(documentSnapshot.id);
+                          return InternshipCard(internship:  internship);
                         },
                       );
                     }
@@ -74,7 +74,7 @@ class _ProcessPageState extends State<ProcessPage> {
               ),
               Center(
                 child:  StreamBuilder(
-                  stream:  FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInterns').snapshots(), //build connection
+                  stream:  FirebaseFirestore.instance.collection('users').doc(uid).collection('savedInternships').snapshots(), //build connection
                   builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                     if (streamSnapshot.hasData) {
                       return ListView.builder(
@@ -82,9 +82,9 @@ class _ProcessPageState extends State<ProcessPage> {
                         itemBuilder: (context, index) {
                           final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                           Map<String, dynamic> map = documentSnapshot.data() as Map<String, dynamic>;
-                          Intern intern = Intern.fromMap(map);
-                          intern.setId(documentSnapshot.id);
-                          return InternCard(intern: intern);
+                          Internship internship = Internship.fromMap(map);
+                          internship.setId(documentSnapshot.id);
+                          return InternshipCard(internship: internship);
                         },
                       );
                     }

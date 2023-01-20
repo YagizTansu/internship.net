@@ -18,7 +18,7 @@ class _NotificationPageState extends State<NotificationPage> {
         appBar: AppBar(
             title: Text(
               "INTERNSHIP.NET",
-              style: TextStyle(fontSize: 22, color: Colors.white,fontWeight: FontWeight.w900),
+              style: TextStyle(fontSize: 21, color: Colors.white,fontWeight: FontWeight.w800),
             ),
           actions: [
             IconButton(
@@ -54,18 +54,8 @@ class _NotificationPageState extends State<NotificationPage> {
                                   fontSize: 18
                               ),),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                TextButton(
-                                  child: const Text('DELETE',style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),),
-                                  onPressed: () {/* ... */},
-                                ),
-                                const SizedBox(width: 8),
-                              ],
+                            SizedBox(
+                              height: 25,
                             ),
                           ],
                         ),

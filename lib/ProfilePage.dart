@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text(
             "INTERNSHIP.NET",
-            style: TextStyle(fontSize: 22, color: Colors.white,fontWeight: FontWeight.w900),
+            style: TextStyle(fontSize: 21, color: Colors.white,fontWeight: FontWeight.w800),
           ),
           actions: [
             IconButton(
@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: Colors.green.shade600,
                               borderRadius: BorderRadius.all(Radius.circular(30)),
                             ),
-                            child: Center(child: Text("Your profile is updated...",style: TextStyle(fontSize: 14),
+                            child: Center(child: Text("Your profile is updated.",style: TextStyle(fontSize: 14),
                             ),
                             ),
                           ),

@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:internship/models/Internship.dart';
 import 'package:internship/models/User.dart';
 
 class ApplicantDetailPage extends StatefulWidget {
-  const ApplicantDetailPage({Key? key,required this.user}) : super(key: key);
+  const ApplicantDetailPage({Key? key,required this.user,required this.internship}) : super(key: key);
   final UserModel user;
+  final Internship internship;
 
   @override
   State<ApplicantDetailPage> createState() => _ApplicantDetailPageState();
@@ -102,7 +104,7 @@ class _ApplicantDetailPageState extends State<ApplicantDetailPage> {
                             .where('userEmail',isEqualTo:widget.user.email).get()
                            .then((QuerySnapshot querySnapshot) => {
                        querySnapshot.docs.forEach((doc) {
-                         sendPushMessage(doc["token"],"Internship.net", "Your application is approved");
+                         sendPushMessage(doc["token"],widget.internship.companyName +" - "+ widget.internship.internshipTitle, "Your application is approved");
                        })
                        });
                        Navigator.of(context).pop();
@@ -127,7 +129,7 @@ class _ApplicantDetailPageState extends State<ApplicantDetailPage> {
                             .where('userEmail',isEqualTo:widget.user.email).get()
                             .then((QuerySnapshot querySnapshot) => {
                           querySnapshot.docs.forEach((doc) {
-                            sendPushMessage(doc["token"],"Internship.net", "Your application is rejected");
+                            sendPushMessage(doc["token"],widget.internship.companyName +" - "+ widget.internship.internshipTitle, "Your application is rejected");
                           })
                         });
                         Navigator.of(context).pop();

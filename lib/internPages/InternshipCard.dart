@@ -1,24 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:internship/models/Intern.dart';
-import 'InternDetailPage.dart';
+import 'package:internship/models/Internship.dart';
+import 'InternshipDetailPage.dart';
 
-class InternCard extends StatefulWidget {
-  const InternCard({Key? key, required this.intern}) : super(key: key);
-  final Intern intern;
+class InternshipCard extends StatefulWidget {
+  const InternshipCard({Key? key, required this.internship}) : super(key: key);
+  final Internship internship;
+
 
   @override
-  State<InternCard> createState() => _InternCardState();
+  State<InternshipCard> createState() => _InternshipCardState();
 }
 
-class _InternCardState extends State<InternCard> {
+class _InternshipCardState extends State<InternshipCard> {
   bool buttonState = true;
+  late Duration duration = new Duration();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    controlChecked(widget.intern.uid);
+    controlChecked(widget.internship.uid);
+    DateTime dt1 = DateTime.parse(widget.internship.publishDay);
+    DateTime dt2 = DateTime.now();
+    duration = dt2.difference(dt1);
   }
   @override
   Widget build(BuildContext context) {
@@ -29,8 +35,8 @@ class _InternCardState extends State<InternCard> {
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => InternDetailPage(
-                    intern: widget.intern,
+                  builder: (context) => InternshipDetailPage(
+                    internship: widget.internship,
                   )));
             },
             child: Card(
@@ -43,14 +49,14 @@ class _InternCardState extends State<InternCard> {
                       height: 80,
                     ),
                     title: Text(
-                      widget.intern.companyName.toUpperCase()+ " - " + widget.intern.jobTitle,
+                      widget.internship.companyName.toUpperCase()+ " - " + widget.internship.internshipTitle,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(widget.intern.city+", "+widget.intern.country ),
+                        Text(widget.internship.city+", "+widget.internship.country ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Row(
@@ -67,7 +73,7 @@ class _InternCardState extends State<InternCard> {
                           ),
                         ),
                         Text(
-                          widget.intern.publishDay + " ago",
+                          duration.inDays.toString() + " days ago",
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.w900),
                         ),
@@ -87,7 +93,7 @@ class _InternCardState extends State<InternCard> {
 
    controlChecked(String id) async{
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInterns').doc(id).get();
+    var ds = await FirebaseFirestore.instance.collection("users").doc(uid).collection('savedInternships').doc(id).get();
 
     setState(() {
       if (!ds.exists) {
